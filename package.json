@@ -4,7 +4,7 @@
   "description": "Elexes",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -14,5 +14,11 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/narayanaditya95/elexes/issues"
+  },
+  "dependencies": {
+    "express": "~4.13.3",
+    "ejs": "~2.3.4",
+    "node-sass-middleware": "~0.9.6",
+    "googleapis": "~2.1.5"
   }
 }
