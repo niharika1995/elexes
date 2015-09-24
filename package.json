@@ -18,6 +18,8 @@
   "dependencies": {
     "express": "~4.13.3",
     "ejs": "~2.3.4",
-    "googleapis": "~2.1.5"
+    "googleapis": "~2.1.5",
+    "parse": "~1.6.3",
+    "underscore": "~1.8.3"
   }
 }
