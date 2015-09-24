@@ -1,7 +1,16 @@
 var express = require('express');
+var sassMiddleware = require('node-sass-middleware');
+var path = require('path');
 var app = express();
 
 app.set('port', (process.env.PORT || 5000));
+app.use(sassMiddleware({
+    src: path.join(__dirname, 'public', 'scss'),
+    dest: path.join(__dirname, 'public'),
+    debug: true,
+    outputStyle: 'compressed',
+    prefix:  '/css'
+}));
 
 app.use(express.static(__dirname + '/public'));
 
@@ -10,7 +19,7 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {
-  response.render('pages/index');
+  response.render('index');
 });
 
 app.listen(app.get('port'), function() {
