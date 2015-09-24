@@ -18,7 +18,6 @@
   "dependencies": {
     "express": "~4.13.3",
     "ejs": "~2.3.4",
-    "node-sass-middleware": "~0.9.6",
     "googleapis": "~2.1.5"
   }
 }
