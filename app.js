@@ -93,13 +93,8 @@ app.get('/oauthCallback', function(request, response) {
                 user.set('firstName', person.name['givenName']);
                 user.set('lastName', person.name['familyName']);
                 user.set('companyDomain', email.replace(/.*@/, ""));
-                user.set('authData', {
-                  'google': {
-                    'id': person.id,
-                    'access_token': token.access_token,
-                    'expiration_date': new moment().add(60, 'h').format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z'
-                  }
-                });
+                user.set('token', token.access_token);
+                user.set('photo', person.image.url);
                 user.signUp(null, {
                   success: function(user) {
                     console.log('User signed up');
