@@ -3,6 +3,7 @@ var path = require('path');
 var Parse = require('parse/node');
 var Request = require('request');
 var querystring = require('querystring')
+var moment = require('moment');
 
 var app = express();
 
@@ -11,6 +12,7 @@ Parse.initialize(
   'yZtbJl9o9FsEhDOKRcMJtI2vuWKE2PJq7asuwMsY',
   'uBMOQFUPhGny5frqOHh9nHveLYZHwjpuaCPn4oBn'
 );
+Parse.User.enableUnsafeCurrentUser()
 
 var TokenStorage = Parse.Object.extend("TokenStorage");
 var restrictedAcl = new Parse.ACL();
@@ -26,6 +28,7 @@ var REDIRECT_URL = 'https://floating-forest-3059.herokuapp.com/oauthCallback';
 
 var scopes = [
   'https://www.googleapis.com/auth/plus.me',
+  'https://www.googleapis.com/auth/userinfo.email',
   'https://www.googleapis.com/auth/drive'
 ];
 
@@ -38,7 +41,7 @@ app.get('/', function(request, response) {
 
 app.get('/authorize', function(request, response) {
   auth_url = 'https://accounts.google.com/o/oauth2/auth' + '?' + querystring.stringify({
-    'scope': scopes[0] + ' ' + scopes[1],
+    'scope': scopes.join(' '),
     'response_type': 'code',
     'client_id': CLIENT_ID,
     'access_type': 'offline',
@@ -75,8 +78,55 @@ app.get('/oauthCallback', function(request, response) {
       }, function(personErr, personResponse, personBody) {
         if (!personErr && personResponse.statusCode == 200) {
           var person = JSON.parse(personBody);
-          console.log(person);
-          return response.send(person);
+          var query = new Parse.Query(Parse.User);
+          query.equalTo("email", person.emails[0].value);
+          query.first({
+            success: function(user) {
+              if(user === undefined) {
+                // New user
+                console.log('New user signup');
+                var user = new Parse.User();
+                var email = person.emails[0].value;
+                user.set('username', email);
+                user.set('password', Math.random().toString(36).substring(8));
+                user.set('email', email);
+                user.set('firstName', person.name['givenName']);
+                user.set('lastName', person.name['familyName']);
+                user.set('companyDomain', email.replace(/.*@/, ""));
+                user.set('authData', {
+                  'google': {
+                    'id': person.id,
+                    'access_token': token.access_token,
+                    'expiration_date': new moment().add(60, 'h').format('YYYY-MM-DDTHH:mm:ss.SSS')+'Z'
+                  }
+                });
+                user.signUp(null, {
+                  success: function(user) {
+                    console.log('User signed up');
+                    Parse.User.become(user.getSessionToken).then(function (user) {
+                        return response.redirect('/dashboard');
+                      },
+                      function (error) {
+                        console.log('Login with GitHub Failed.');
+                        return response.redirect('/');
+                      });
+                  },
+                  error: function(user, error) {
+                    console.log('Error signing up user');
+                    return response.send(error);
+                  }
+                });
+              }
+              else {
+                //Existing user
+                return response.send('Existing user');
+              }
+            },
+            error: function(error) {
+              console.log("Fetching user query");
+              return response.send(error);
+            }
+          });
         }
         else {
           console.log(personErr);
@@ -89,6 +139,18 @@ app.get('/oauthCallback', function(request, response) {
       return response.send(tokenErr);
     }
   });
+});
+
+app.get('/dashboard', function(request, response) {
+  var currentUser = Parse.User.current();
+  if(currentUser) {
+    return response.render('dashboard', {
+      'user': currentUser.getUsername()
+    });
+  }
+  else {
+    return response.redirect('/');
+  }
 });
 
 app.listen(app.get('port'), function() {
