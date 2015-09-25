@@ -69,8 +69,8 @@ app.get('/oauthCallback', function(request, response) {
       console.log(token);
       Request.get({
         url: 'https://www.googleapis.com/plus/v1/people/me',
-        form: {
-          'access_token': token.access_token
+        headers: {
+          'Authorization': 'Bearer ' + token.access_token
         }
       }, function(personErr, personResponse, personBody) {
         if (!personErr && personResponse.statusCode == 200) {
