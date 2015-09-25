@@ -42,7 +42,6 @@ app.get('/authorize', function(request, response) {
     'response_type': 'code',
     'client_id': CLIENT_ID,
     'access_type': 'offline',
-    'approval_prompt': 'force',
     'redirect_uri': REDIRECT_URL
   });
   response.redirect(auth_url);
@@ -62,18 +61,32 @@ app.get('/oauthCallback', function(request, response) {
       'client_id': CLIENT_ID,
       'client_secret': CLIENT_SECRET,
       'redirect_uri': REDIRECT_URL,
-      'access_type': 'offline',
       'grant_type': 'authorization_code'
     }
-  }, function(err, httpResponse, body) {
-    if (!err && httpResponse.statusCode == 200) {
-      console.log(httpResponse.statusCode);
-      var token = JSON.parse(body);
-      return response.send(token);
+  }, function(tokenErr, tokenResponse, tokenBody) {
+    if (!tokenErr && tokenResponse.statusCode == 200) {
+      var token = JSON.parse(tokenBody);
+      console.log(token);
+      Request.get({
+        url: 'https://www.googleapis.com/plus/v1/people/me',
+        form: {
+          'access_token': token.access_token
+        }
+      }, function(personErr, personResponse, personBody) {
+        if (!personErr && personResponse.statusCode == 200) {
+          var person = JSON.parse(personBody);
+          console.log(person);
+          return response.send(person);
+        }
+        else {
+          console.log(personErr);
+          return response.send(personResponse);
+        }
+      });
     }
     else {
-      console.log(err);
-      return response.send(err);
+      console.log(tokenErr);
+      return response.send(tokenErr);
     }
   });
 });
