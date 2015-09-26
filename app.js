@@ -81,9 +81,9 @@ app.get('/oauthCallback', function(request, response) {
           var query = new Parse.Query(Parse.User);
           query.equalTo("email", person.emails[0].value);
           query.first({
+            useMasterKey: true,
             success: function(user) {
               if(user === undefined) {
-                // New user
                 console.log('New user signup');
                 var user = new Parse.User();
                 var email = person.emails[0].value;
@@ -96,15 +96,17 @@ app.get('/oauthCallback', function(request, response) {
                 user.set('token', token.access_token);
                 user.set('photo', person.image.url);
                 user.signUp(null, {
+                  useMasterKey: true,
                   success: function(user) {
                     console.log('User signed up');
-                    Parse.User.become(user.getSessionToken).then(function (user) {
-                        return response.redirect('/dashboard');
-                      },
-                      function (error) {
-                        console.log('Login with GitHub Failed.');
-                        return response.redirect('/');
-                      });
+                    console.log(user.getSessionToken());
+                    Parse.User.become(user.getSessionToken()).then(function (user) {
+                      return response.redirect('/dashboard');
+                    },
+                    function (error) {
+                      console.log('Login with Google Failed.');
+                      return response.redirect('/');
+                    });
                   },
                   error: function(user, error) {
                     console.log('Error signing up user');
@@ -113,12 +115,29 @@ app.get('/oauthCallback', function(request, response) {
                 });
               }
               else {
-                //Existing user
-                return response.send('Existing user');
+                console.log('Existing user login');
+                // Update the accessToken if it is different.
+                if (user.get('token') !== token.access_token) {
+                  user.set('token', token.access_token);
+                }
+                var pswd = Math.random().toString(36).substring(8);
+                user.setPassword(pswd);
+                user.save(null, { useMasterKey: true }).then(function (user) {
+                  Parse.User.logIn(user.get('email'), pswd, {
+                    useMasterKey: true,
+                    success: function(user) {
+                      return response.redirect('/dashboard');
+                    },
+                    error: function(error) {
+                      console.log('Error logging in ' + error);
+                      return response.send(error);
+                    }
+                  });
+                });
               }
             },
             error: function(error) {
-              console.log("Fetching user query");
+              console.log("Error fetching user query");
               return response.send(error);
             }
           });
@@ -146,6 +165,14 @@ app.get('/dashboard', function(request, response) {
   else {
     return response.redirect('/');
   }
+});
+
+app.get('/logout', function(request, response) {
+  var currentUser = Parse.User.current();
+  if(currentUser) {
+    Parse.User.logOut();
+  }
+  return response.redirect('/');
 });
 
 app.listen(app.get('port'), function() {
