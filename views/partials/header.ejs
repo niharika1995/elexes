@@ -1,9 +1,16 @@
 <header class="top-header">
     <a href="/" class="logo-header navbar-brand">ELEXES</a>
-    <% if(currentUser) { %>
-
-    <% } %>
-    <% else { %>
+    <% if(user) { %>
+        <div class="dropdown right-nav-button">
+             <button class="dropdown-toggle" type="button" id="profileDropdown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                <img src="<%= photo %>" alt="User Profile" class="img-circle">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown1">
+                <li><a href="/logout">Logout</a></li>
+            </ul>
+        </div>
+    <% } else { %>
     <a class="right-nav-button" href="/authorize/">
         <button class="btn btn-primary">Sign in using Google Account</button>
     </a>

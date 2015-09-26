@@ -14,11 +14,6 @@ Parse.initialize(
 );
 Parse.User.enableUnsafeCurrentUser()
 
-var TokenStorage = Parse.Object.extend("TokenStorage");
-var restrictedAcl = new Parse.ACL();
-restrictedAcl.setPublicReadAccess(false);
-restrictedAcl.setPublicWriteAccess(false);
-
 app.set('port', (process.env.PORT || 5000));
 app.use(express.static(__dirname + '/public'));
 
@@ -36,9 +31,21 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {
-  response.render('index', {
-    title: 'Home Page'
-  });
+  var currentUser = Parse.User.current();
+  if(currentUser) {
+    return response.render('index', {
+      'title': 'Home Page',
+      'user': true,
+      'firstName': currentUser.firstName,
+      'photo': currentUser.photo
+    });
+  }
+  else {
+    return response.render('index', {
+      'title': 'Home Page',
+      'user': false
+    });
+  }
 });
 
 app.get('/authorize', function(request, response) {
@@ -161,13 +168,14 @@ app.get('/dashboard', function(request, response) {
   var currentUser = Parse.User.current();
   if(currentUser) {
     return response.render('dashboard', {
-      'user': currentUser
+      'title': 'Dashboard',
+      'user': true,
+      'firstName': currentUser.get('firstName'),
+      'photo': currentUser.get('photo')
     });
   }
   else {
-    return response.redirect('/', {
-      title: 'Dashboard',
-    });
+    return response.redirect('/');
   }
 });
 
