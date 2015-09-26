@@ -1,6 +1,11 @@
 <header class="top-header">
     <a href="/" class="logo-header navbar-brand">ELEXES</a>
+    <% if(currentUser) { %>
+
+    <% } %>
+    <% else { %>
     <a class="right-nav-button" href="/authorize/">
         <button class="btn btn-primary">Sign in using Google Account</button>
     </a>
+    <% } %>
 </header>

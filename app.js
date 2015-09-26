@@ -36,7 +36,9 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 
 app.get('/', function(request, response) {
-  response.render('index');
+  response.render('index', {
+    title: 'Home Page'
+  });
 });
 
 app.get('/authorize', function(request, response) {
@@ -159,11 +161,13 @@ app.get('/dashboard', function(request, response) {
   var currentUser = Parse.User.current();
   if(currentUser) {
     return response.render('dashboard', {
-      'user': currentUser.getUsername()
+      'user': currentUser
     });
   }
   else {
-    return response.redirect('/');
+    return response.redirect('/', {
+      title: 'Dashboard',
+    });
   }
 });
 
