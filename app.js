@@ -36,7 +36,6 @@ app.get('/', function(request, response) {
     return response.render('index', {
       'title': 'Home Page',
       'user': true,
-      'firstName': currentUser.firstName,
       'photo': currentUser.photo
     });
   }
@@ -170,7 +169,6 @@ app.get('/dashboard', function(request, response) {
     return response.render('dashboard', {
       'title': 'Dashboard',
       'user': true,
-      'firstName': currentUser.get('firstName'),
       'photo': currentUser.get('photo')
     });
   }

@@ -6,14 +6,10 @@
 
 <body>
     <% include partials/header %>
-    <section id="hero" class="container-fluid">
-    Welcome <%= firstName %>
+    <section class="container">
         <div class="col-lg-10 col-lg-offset-1">
-            One place to discover and improve all your documents!
+            <h1>One place to discover and improve all your documents!</h1>
         </div>
-    </section>
-
-    <section id="quick-btn" class="container">
         <div class="btn-toolbar">
             <button type="button" class="btn btn-default">Initiate a change</button>
             <button type="button" class="btn btn-default">Your pending actions <span class="badge">5</span></button>
@@ -21,6 +17,7 @@
             <button type="button" class="btn btn-default">Your saved data</button>
         </div>
     </section>
+
     <% include partials/footer %>
 </body>
 
