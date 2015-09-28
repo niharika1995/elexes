@@ -1,13 +1,13 @@
 // Font weights
-$light: 100;
-$regular: 300;
-$bold: 500;
-$extra-bold: 600;
+$light: 200;
+$regular: 400;
+$bold: 600;
+$extra-bold: 800;
 
 // Base Font
 $base-font-family: sans-serif;
 $base-font-weight: $regular;
-$base-font-size: 13px;
+$base-font-size: 15px;
 $base-line-height: 23px;
 
 // Fixed Font
@@ -17,9 +17,9 @@ $fixed-line-height: $base-line-height;
 
 // Headings
 $header-font-weight: $light;
-$h1-font-size: 3.125 * $base-font-size;
-$h2-font-size: 2.5 * $base-font-size;
-$h3-font-size: 1.5 * $base-font-size;
+$h1-font-size: 2.5 * $base-font-size;
+$h2-font-size: 2 * $base-font-size;
+$h3-font-size: 1.23 * $base-font-size;
 $h4-font-size: 1 * $base-font-size;
 $h5-font-size: 0.75 * $base-font-size;
 $h6-font-size: 0.5 * $base-font-size;
@@ -35,11 +35,11 @@ $primary-color-hover: #3266d5;
 $icon-fill-color: #8b8b8b;
 
 // Sizes
-$min-section-height: 350px;
-$section-padding-top: 75px;
-$section-padding-bottom: 60px;
+$min-section-height: 150px;
+$section-padding-top: 25px;
+$section-padding-bottom: 10px;
 $small-section-padding-top: 50px;
-$small-section-padding-bottom: 50px;
+$small-section-padding-bottom: $section-padding-bottom;
 
 // Global variables
 $base-transition: all .3s;

@@ -1,6 +1,10 @@
 .btn {
-    font-weight: $bold;
+    font-weight: $regular;
     transition: $base-cubic-transition;
+    .badge {
+        top: -15px;
+        right: -15px;
+    }
 }
 .btn-primary {
     color: #fff !important;
@@ -13,4 +17,19 @@
         color: #fff;
         background: $primary-color-hover;
     }
+}
+.btn-success {
+    color: green;
+    background-color: $base-background-color;
+    border-color: $main-color;
+}
+.btn-warning {
+    color: orange;
+    background-color: $base-background-color;
+    border-color: $main-color;
+}
+.btn-danger {
+    color: red;
+    background-color: $base-background-color;
+    border-color: $main-color;
 }

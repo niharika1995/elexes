@@ -1,4 +1,4 @@
-$modal-color: #757575;
+$modal-color: #F5F6E4;
 $modal-highlight-color: #212121;
 .modal {
     z-index: 1050;
@@ -44,71 +44,4 @@ $modal-highlight-color: #212121;
 .modal-body {
     padding: 16px 31px;
     color: $modal-color;
-}
-.people-modal {
-    .theme-metadata {
-        font-size: 14px;
-        margin-right: 10px;
-        .caption {
-            color: $modal-highlight-color;
-        }
-    }
-    .theme-video {
-        margin: 20px 0;
-    }
-    .theme-description {
-        margin: 12px 0 20px;
-    }
-    .theme-link {
-        font-size: 15px;
-    }
-    .people-details {
-        .row {
-            margin-top: 20px;
-        }
-        .people-img {
-            width: 100px;
-            height: 100px;
-            margin: 10px;
-            @media (max-width: 767px) {
-                width: 120px;
-                height: 120px;
-                margin: 10px auto;
-            }
-        }
-        .details {
-            padding-left: 30px;
-            @media (max-width: 767px) {
-                padding: 0;
-            }
-        }
-        .name {
-            margin-bottom: 9px;
-            font-size: 17px;
-            font-weight: $bold;
-            color: $modal-highlight-color;
-        }
-        .position {
-            font-weight: $regular;
-            color: $modal-color;
-        }
-        .social {
-            padding: 0;
-            list-style: none;
-            @media (max-width: 767px) {
-                text-align: center;
-            }
-            li {
-                display: inline-block;
-                padding-right: 3px;
-            }
-        }
-    }
-}
-.modal-ribbon-wrapper {
-    margin-bottom: 5px;
-    .modal-ribbon {
-        margin-right: 7px;
-        font-size: 14px;
-    }
 }
