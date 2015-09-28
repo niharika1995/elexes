@@ -14,6 +14,11 @@ Parse.initialize(
 );
 Parse.User.enableUnsafeCurrentUser()
 
+var TokenStorage = Parse.Object.extend("Tokens");
+var restrictedAcl = new Parse.ACL();
+restrictedAcl.setPublicReadAccess(false);
+restrictedAcl.setPublicWriteAccess(false);
+
 app.set('port', (process.env.PORT || 5000));
 app.use(express.static(__dirname + '/public'));
 
@@ -33,11 +38,7 @@ app.set('view engine', 'ejs');
 app.get('/', function(request, response) {
   var currentUser = Parse.User.current();
   if(currentUser) {
-    return response.render('index', {
-      'title': 'Home Page',
-      'user': true,
-      'photo': currentUser.photo
-    });
+    return response.redirect('/dashboard');
   }
   else {
     return response.render('index', {
@@ -53,6 +54,7 @@ app.get('/authorize', function(request, response) {
     'response_type': 'code',
     'client_id': CLIENT_ID,
     'access_type': 'offline',
+    'approval_prompt': 'force',
     'redirect_uri': REDIRECT_URL
   });
   response.redirect(auth_url);
@@ -77,7 +79,7 @@ app.get('/oauthCallback', function(request, response) {
   }, function(tokenErr, tokenResponse, tokenBody) {
     if (!tokenErr && tokenResponse.statusCode == 200) {
       var token = JSON.parse(tokenBody);
-      console.log(token);
+
       Request.get({
         url: 'https://www.googleapis.com/plus/v1/people/me',
         headers: {
@@ -101,13 +103,26 @@ app.get('/oauthCallback', function(request, response) {
                 user.set('firstName', person.name['givenName']);
                 user.set('lastName', person.name['familyName']);
                 user.set('companyDomain', email.replace(/.*@/, ""));
-                user.set('token', token.access_token);
                 user.set('photo', person.image.url);
                 user.signUp(null, {
                   useMasterKey: true,
                   success: function(user) {
                     console.log('User signed up');
                     console.log(user.getSessionToken());
+                    var ts = new TokenStorage();
+                    ts.set('accessToken', token.access_token);
+                    ts.set('refreshToken', token.refresh_token)
+                    ts.set('user', user);
+                    ts.setACL(restrictedAcl);
+                    ts.save(null, {
+                      useMasterKey: true,
+                      success: function(ts) {
+                        console.log('Token saved', ts);
+                      },
+                      error: function(ts, error) {
+                        console.log('Token save failed', ts, error);
+                      }
+                    });
                     Parse.User.become(user.getSessionToken()).then(function (user) {
                       return response.redirect('/dashboard');
                     },
@@ -123,11 +138,22 @@ app.get('/oauthCallback', function(request, response) {
                 });
               }
               else {
-                console.log('Existing user login');
+                console.log('Existing user login', JSON.stringify(user));
                 // Update the accessToken if it is different.
-                if (user.get('token') !== token.access_token) {
-                  user.set('token', token.access_token);
-                }
+                var ts_query = new Parse.Query(TokenStorage);
+                ts_query.equalTo('user', user);
+                ts_query.first( {useMasterKey: true } ).then(function(ts) {
+                  if (ts.get('accessToken') !== token.access_token) {
+                    ts.set('accessToken', token.access_token);
+                  }
+                  if (ts.get('refreshToken') !== token.refresh_token) {
+                    ts.set('refreshToken', token.refresh_token);
+                  }
+                  ts.save(null, { useMasterKey: true });
+                }, function(error) {
+                  console.log('Error getting token', error);
+                  response.send(error);
+                });
                 var pswd = Math.random().toString(36).substring(8);
                 user.setPassword(pswd);
                 user.save(null, { useMasterKey: true }).then(function (user) {
@@ -166,6 +192,13 @@ app.get('/oauthCallback', function(request, response) {
 app.get('/dashboard', function(request, response) {
   var currentUser = Parse.User.current();
   if(currentUser) {
+    if(currentUser.get('domainAdmin')) {
+      return response.render('admin', {
+      'title': 'Administration',
+      'user': true,
+      'photo': currentUser.get('photo')
+      });
+    }
     return response.render('dashboard', {
       'title': 'Dashboard',
       'user': true,
