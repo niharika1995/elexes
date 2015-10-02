@@ -193,12 +193,35 @@ app.get('/dashboard', function(request, response) {
   var currentUser = Parse.User.current();
   if(currentUser) {
     if(currentUser.get('domainAdmin')) {
-      return response.render('admin', {
-      'title': 'Administration',
-      'user': true,
-      'photo': currentUser.get('photo')
+      // Administrator
+      var query = new Parse.Query('Initiations');
+      query.equalTo('status', false);
+      var initiatorQuery = new Parse.Query(Parse.User);
+      console.log('match initiator to be of ', currentUser.get('companyDomain'));
+      initiatorQuery.equalTo('companyDomain', currentUser.get('companyDomain'));
+      query.matchesQuery('initiator', initiatorQuery);
+      query.find({
+        success: function(initiations) {
+          console.log('initiaitions to be approved', initiations);
+          return response.render('admin', {
+            'title': 'Administration',
+            'user': true,
+            'photo': currentUser.get('photo'),
+            'initiations': initiations
+          });
+        },
+        error: function(error) {
+          console.log('Error getting initiations', error);
+          return response.render('admin', {
+            'title': 'Administration',
+            'user': true,
+            'photo': currentUser.get('photo'),
+            'initiations': []
+          });
+        }
       });
     }
+    // Reviewer/Initiator
     return response.render('dashboard', {
       'title': 'Dashboard',
       'user': true,
