@@ -197,36 +197,36 @@ app.get('/dashboard', function(request, response) {
       var query = new Parse.Query('Initiations');
       query.equalTo('status', false);
       var initiatorQuery = new Parse.Query(Parse.User);
-      console.log('match initiator to be of ', currentUser.get('companyDomain'));
       initiatorQuery.equalTo('companyDomain', currentUser.get('companyDomain'));
       query.matchesQuery('initiator', initiatorQuery);
+      query.include('dco');
+      query.include('initiator');
       query.find({
         success: function(initiations) {
-          console.log('initiaitions to be approved', initiations);
+          console.log(JSON.stringify(initiations));
           return response.render('admin', {
             'title': 'Administration',
-            'user': true,
-            'photo': currentUser.get('photo'),
-            'initiations': initiations
+            'user': JSON.stringify(currentUser),
+            'initiations': JSON.stringify(initiations)
           });
         },
         error: function(error) {
           console.log('Error getting initiations', error);
           return response.render('admin', {
             'title': 'Administration',
-            'user': true,
-            'photo': currentUser.get('photo'),
+            'user': JSON.stringify(currentUser),
             'initiations': []
           });
         }
       });
     }
-    // Reviewer/Initiator
-    return response.render('dashboard', {
-      'title': 'Dashboard',
-      'user': true,
-      'photo': currentUser.get('photo')
-    });
+    else {
+      // Reviewer/Initiator
+      return response.render('dashboard', {
+        'title': 'Dashboard',
+        'user': JSON.stringify(currentUser)
+      });
+    }
   }
   else {
     return response.redirect('/');

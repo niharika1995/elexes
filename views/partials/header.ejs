@@ -1,9 +1,10 @@
 <header class="top-header">
     <a href="/" class="logo-header navbar-brand">ELEXES</a>
     <% if(user) { %>
+        <% var currentUser = JSON.parse(user); %>
         <div class="dropdown right-nav-button">
              <a class="dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-                <img src="<%= photo %>" alt="User Profile" class="img-circle">
+                <img src="<%= currentUser['photo'] %>" alt="User Profile" class="img-circle">
                 <span class="caret"></span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
