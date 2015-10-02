@@ -1,9 +1,11 @@
 .btn {
     font-weight: $regular;
     transition: $base-cubic-transition;
+    position: relative;
     .badge {
-        top: -15px;
-        right: -15px;
+        top: -10px;
+        right: -10px;
+        position: absolute;
     }
 }
 .btn-primary {
