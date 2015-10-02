@@ -13,7 +13,15 @@ $action-colour: #ffffff;
     padding: 10px;
     p {
         text-align: left;
+        @media (max-width: 767px) {
+            text-align: center;
+        }
         padding: 5px;
         vertical-align: middle;
+    }
+    span {
+        color: #F07730;
+        font-weight: $bold;
+        padding: 3px;
     }
 }

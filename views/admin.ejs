@@ -23,13 +23,13 @@
         <% for(var i=0; i<initiationList.length; i++) { %>
         <div class="action-bar">
             <div class="row">
-                <div class="col-xs-1"><i class="fa fa-file-text fa-3x hidden-xs"></i></div>
+                <div class="col-xs-1"><span class="fa fa-file-text fa-3x hidden-xs"></span></div>
                 <div class="col-xs-11">
                     <div class="row">
-                        <p class="col-md-6"><%= initiationList[i]['initiator']['firstName'] %> initiated a change in the document:<%= initiationList[i]['dco']['title'] %></p>
-                        <div class="col-md-6 btn-toolbar">
-                            <a role="button" class="btn btn-default" href="<%= initiationList[i]['dco']['link'] %>" target="_blank">View Details <%= initiationList[i]['dco']['title'] %></a>
-                            <a role="button" class="btn btn-warning">Assign Reviewers</a>
+                        <p class="col-sm-6"><%= initiationList[i]['initiator']['firstName'] %> initiated a change in the document:<span><%= initiationList[i]['dco']['title'] %></span></p>
+                        <div class="col-sm-6 btn-toolbar">
+                            <a role="button" class="btn btn-default" href="<%= initiationList[i]['dco']['link'] %>" target="_blank">View Details<br><span><%= initiationList[i]['dco']['title'] %></span></a>
+                            <a role="button" class="btn btn-warning">Assign<br>Reviewers</a>
                         </div>
                     </div>
                 </div>
